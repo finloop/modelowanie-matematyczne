@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{polski}
+\usepackage{amssymb}
 \usepackage{alltt}
 \usepackage{float}
 \usepackage[a4paper, total={6in, 10in}]{geometry}
@@ -115,23 +116,29 @@ $$x_1(0)=1, x_1'(0)=0, x_1(0)=0, x_2'(0)=1 $$
 $$x_1(0)=0, x_1'(0)=1, x_1(0)=1, x_2'(0)=0 $$
 $$x_1(0)=1, x_1'(0)=1, x_1(0)=0, x_2'(0)=0 $$
 
-
-\section{Rozwiązanie}
-
-\subsection{Układ 1}
-
-Układ pierwszy możemy rozwiązać analitycznie. Dla parametrów początkowych 
-$x(0) = 1, x'(0) = 0$, wygląda to następująco:
-
-\begin{figure}[H]
-\centering
-    \includegraphics[scale=0.28]{./img/rozw-1.jpg}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-    \includegraphics[scale=0.28]{./img/rozw-2.jpg}
-\end{figure}
+\section{Teoria}
+Jednorodne równania różniczkowe $n$-tego rzędu o stałych współczynnikach, to równania
+następującej postaci:
+\begin{equation}
+y^{(n)} + a_1 y^{(n-1)} + ... + a_n y = 0
+\end{equation}
+gdzie $a_1, ..., a_n \in \mathbb{C} $. Wielomian charakterystyczny takiego równania ma postać:
+\begin{equation}
+D(\lambda) = \lambda^n + a_1 \lambda^{n-1} + ... + a_n
+\end{equation}
+Rozwiązanie takiego równania można zapisać z pomocą jego pierwiastków.
+Dla każdego $\lambda_i \in \mathbb{R}$ o krotności $m$:
+\begin{equation}
+y = (C_1 + C_2 t + ... + C_{m-1} t ^{m-1}) e^{\lambda_i t}
+\end{equation}
+Dla każdego $\lambda_i \in \mathbb{C}$ o krotności $m$:
+\begin{equation}
+\begin{split}
+y = e^{\alpha t} \left[ C_1 + C_2 + ... + C_{m-1} t^{m-1} \right] cos(\beta t)  \\
+    + e^{\alpha t} \left[ D_1 + D_2 + ... + D_{m-1} t^{m-1} \right] sin(\beta t)
+\end{split}
+\end{equation}
+gdzie: $\lambda = \alpha + \beta i$
 
 \subsubsection{Badanie typów rozwiązań}
 Postać ogólna rozwiązywanego równania wygląda następująco:
@@ -145,6 +152,77 @@ Możliwe są zatem 3 przypadki:
     \item $k_1, k_2$ są zespolone
     \item $k_1, k_2$ są równe (rzeczywiste lub zespolone)
 \end{enumerate}
+
+\section{Rozwiązanie}
+
+\subsection{Układ 1}
+
+Układ pierwszy możemy rozwiązać analitycznie. Dla parametrów początkowych \\
+$x(0) = 1, x'(0) = 0$, wygląda to następująco:
+
+\begin{figure}[H]
+\centering
+    \includegraphics[scale=0.28]{./img/rozw-1.jpg}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[scale=0.28]{./img/rozw-2.jpg}
+\end{figure}
+
+Do porównania wyników wykorzystam następujący kod w scilab:
+
+\begin{lstlisting}[label={code1},language=scilab,caption={Kod porównujący rozwiązania}]
+T=0.0:0.1:10;
+k1 = -3 + sqrt(5);
+k2 = -3 - sqrt(5);
+C2 = 1/(-k2/k1 + 1);
+C1 = 1 - C2;
+
+// Rozwiazanie analityczne
+function y=yy(t)
+    y = list();
+    y(1) = C1*exp(k1*t) + C2*exp(k2*t);
+    y(2) = C1*k1*exp(k1*t) + C2*k2*exp(k2*t);
+endfunction
+plot(T, [yy(T)(1); yy(T)(2)]) % Wykres rozwiazania analitycznego
+
+// Rozwiazanie w Scilab
+function zad1(u, k, m)
+    function dy=fun(t, y)
+        dy(1)=y(2);
+        dy(2)=-u/m*y(2)-k/m*y(1);
+    endfunction
+    
+    t0=0.0;y0=[1;0];
+    T=0.0:0.1:10;
+    y=ode(y0,t0,T,fun,list(fun));
+    scf(3);
+    plot(T,y); xgrid();
+    scf(4);
+    plot(y(1,:),y(2,:)); xgrid();
+endfunction
+
+zad1(6, 4, 1) // rozwiazanie w scilab
+
+
+\end{lstlisting}
+\begin{figure}[H]
+  \centering
+  \hspace{-1.6cm}
+  \begin{minipage}[b]{0.49\textwidth}
+    \includegraphics[scale=0.47]{./img/4-rzeczywiste-xy}
+    \caption{Rozwiązanie w Scilab}
+    \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.49\textwidth}
+    \includegraphics[scale=0.47]{./img/4-analityczne}
+    \caption{Rozwiązanie analityczne}
+    \label{4-analityczne}
+  \end{minipage}
+\end{figure}
+
+\subsubsection{Rozwiazanie w Scilab}
 
 \begin{lstlisting}[label={code1},language=scilab,caption={Kod generujący wykresy}]
 function zad5(u, k, m, y0)
@@ -188,12 +266,51 @@ zad5(2, 4, 1, [1;0]) // k1 i k_2 są rowne
 xs2png(3, "img/5-rowne-xy.png")
 xs2png(4, "img/5-rowne-phase.png")
 close();close();
+
+/////////////////////////////////////////////////////////////////
+
+zad5(6, 4, 1, [1;1]) // k_1 i k_2 są różne, rzeczywiste
+xs2png(3, "img/5-rzeczywiste-xy-11.png")
+close();close();
+
+zad5(1, 4, 1, [1;1]) // k_1 i k_2 są zespolone
+xs2png(3, "img/5-zespolone-xy-11.png")
+close();close();
+
+zad5(0, 4, 1, [1;1]) // k1 i k_2 brak oporu
+xs2png(3, "img/5-boporu-xy-11.png")
+close();close();
+
+zad5(2, 4, 1, [1;1]) // k1 i k_2 są równe
+xs2png(3, "img/5-rowne-xy-11.png")
+close();close();
+
+/////////////////////////////////////////////////////////////////
+
+zad5(6, 4, 1, [0;1]) // k_1 i k_2 są różne, rzeczywiste
+xs2png(3, "img/5-rzeczywiste-xy-01.png")
+close();close();
+
+zad5(1, 4, 1, [0;1]) // k_1 i k_2 są zespolone
+xs2png(3, "img/5-zespolone-xy-01.png")
+close();close();
+
+zad5(0, 4, 1, [0;1]) // k1 i k_2 brak oporu
+xs2png(3, "img/5-boporu-xy-01.png")
+close();close();
+
+zad5(2, 4, 1, [0;1]) // k1 i k_2 są równe
+xs2png(3, "img/5-rowne-xy-01.png")
+close();close();
 \end{lstlisting}
 
 \subsubsection{Rozwiązanie układu z modyfikacją parametrów przy $x(0)=1, x'(0)=0$}
 
+Poniższe wykresy zostały wygenerowane modyfikując parametry $\mu, k, m$. Każdy z nich był zmieniany w granicach 10 procent.
+
 \begin{figure}[H]
   \centering
+  \textbf{Układ bez oporu}\par\medskip
   \hspace{-1.6cm}
   \begin{minipage}[b]{0.49\textwidth}
     \includegraphics[scale=0.47]{./img/5-boporu-xy}
@@ -210,6 +327,7 @@ close();close();
 
 \begin{figure}[H]
   \centering
+  \textbf{Układ z różnymi rozwiązaniami rzeczywistymi}\par\medskip
   \hspace{-1.6cm}
   \begin{minipage}[b]{0.49\textwidth}
     \includegraphics[scale=0.47]{./img/5-rzeczywiste-xy}
@@ -226,6 +344,7 @@ close();close();
 
 \begin{figure}[H]
   \centering
+  \textbf{Układ z różnymi rozwiązaniami zespolonymi}\par\medskip
   \hspace{-1.6cm}
   \begin{minipage}[b]{0.49\textwidth}
     \includegraphics[scale=0.47]{./img/5-zespolone-xy}
@@ -242,6 +361,7 @@ close();close();
 
 \begin{figure}[H]
   \centering
+  \textbf{Układ z identycznymi rozwiązaniami rzeczywistymi}\par\medskip
   \hspace{-1.6cm}
   \begin{minipage}[b]{0.49\textwidth}
     \includegraphics[scale=0.47]{./img/5-rowne-xy}
@@ -263,14 +383,19 @@ close();close();
   \centering
   \hspace{-1.6cm}
   \begin{minipage}[b]{0.49\textwidth}
+  \centering
+   \hspace{1.6cm}
+   \textbf{Układ bez oporu}
     \includegraphics[scale=0.47]{./img/5-boporu-xy-01}
-    \caption{Rozwiązanie \\ \centering $x''+2x'+4x=0$}
+    \caption{Rozwiązanie \\ \centering$x''+4x=0$}
   \end{minipage}
   \hfill
   \begin{minipage}[b]{0.49\textwidth}
+  \centering
+  \hspace{1.6cm}
+   \textbf{Identyczne rzeczywiste}
     \includegraphics[scale=0.47]{./img/5-rowne-xy-01}
-    \caption{Wykres fazowy \\
-    \centering $x''+2x'+4x=0$}
+    \caption{Rozwiązanie \\ \centering $x''+2x'+4x=0$}
   \end{minipage}
 \end{figure}
 
@@ -278,14 +403,19 @@ close();close();
   \centering
   \hspace{-1.6cm}
   \begin{minipage}[b]{0.49\textwidth}
+  \hspace{1.6cm}
+  \centering
+   \textbf{Zespolone}
     \includegraphics[scale=0.47]{./img/5-zespolone-xy-01}
-    \caption{Rozwiązanie \\ \centering $x''+2x'+4x=0$}
+    \caption{Rozwiązanie \\ \centering$x''+1x'+4x=0$}
   \end{minipage}
   \hfill
   \begin{minipage}[b]{0.49\textwidth}
+  \centering
+  \hspace{1.6cm}
+  \textbf{Rzeczywiste}
     \includegraphics[scale=0.47]{./img/5-rzeczywiste-xy-01}
-    \caption{Wykres fazowy \\
-    \centering $x''+2x'+4x=0$}
+    \caption{Rozwiązanie \\ \centering$x''+6x'+4x=0$}
   \end{minipage}
 \end{figure}
 
@@ -295,14 +425,19 @@ close();close();
   \centering
   \hspace{-1.6cm}
   \begin{minipage}[b]{0.49\textwidth}
+  \centering
+   \hspace{1.6cm}
+   \textbf{Układ bez oporu}
     \includegraphics[scale=0.47]{./img/5-boporu-xy-11}
-    \caption{Rozwiązanie \\ \centering $x''+2x'+4x=0$}
+    \caption{Rozwiązanie \\ \centering$x''+4x=0$}
   \end{minipage}
   \hfill
   \begin{minipage}[b]{0.49\textwidth}
+  \centering
+  \hspace{1.6cm}
+   \textbf{Identyczne rzeczywiste}
     \includegraphics[scale=0.47]{./img/5-rowne-xy-11}
-    \caption{Wykres fazowy \\
-    \centering $x''+2x'+4x=0$}
+    \caption{Rozwiązanie \\ \centering $x''+2x'+4x=0$}
   \end{minipage}
 \end{figure}
 
@@ -310,14 +445,19 @@ close();close();
   \centering
   \hspace{-1.6cm}
   \begin{minipage}[b]{0.49\textwidth}
+  \hspace{1.6cm}
+  \centering
+   \textbf{Zespolone}
     \includegraphics[scale=0.47]{./img/5-zespolone-xy-11}
-    \caption{Rozwiązanie \\ \centering $x''+2x'+4x=0$}
+    \caption{Rozwiązanie \\ \centering$x''+1x'+4x=0$}
   \end{minipage}
   \hfill
   \begin{minipage}[b]{0.49\textwidth}
+  \centering
+  \hspace{1.6cm}
+  \textbf{Rzeczywiste}
     \includegraphics[scale=0.47]{./img/5-rzeczywiste-xy-11}
-    \caption{Wykres fazowy \\
-    \centering $x''+2x'+4x=0$}
+    \caption{Rozwiązanie \\ \centering$x''+6x'+4x=0$}
   \end{minipage}
 \end{figure}
 
