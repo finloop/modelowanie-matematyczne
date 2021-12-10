@@ -3,6 +3,21 @@ clear;clc;clf;
 /*
         Zadanie 4
  */
+T=0.0:0.1:10;
+k1 = -3 + sqrt(5);
+k2 = -3 - sqrt(5);
+C2 = 1/(-k2/k1 + 1);
+C1 = 1 - C2;
+
+function y=yy(t)
+    y = list();
+    y(1) = C1*exp(k1*t) + C2*exp(k2*t); // 
+    y(2) = C1*k1*exp(k1*t) + C2*k2*exp(k2*t);
+endfunction
+
+plot(T, [yy(T)(1); yy(T)(2)])
+xs2png(0, "img/4-analityczne.png")
+close();
 
 function zad1(u, k, m)
     function dy=fun(t, y)
@@ -227,7 +242,7 @@ y=ode(y0,t0,T,fun,list(fun));
 scf(3);
 plot(T,y); xgrid();
 scf(4);
-plot(y(1,:),y(2,:)); xgrid();
+plot(y(1,:),y(3,:)); xgrid();
 
 
 
