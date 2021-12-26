@@ -171,28 +171,28 @@ zad1(6,4,1)
         k = 4
         m = 1
         a = 2
-        phi = 1
+        omega = 1
  */
  
-function zad7(u, k, m, a, phi)
+function zad7(u, k, m, a, omega)
     function dy=fun(t, y)
         dy(1)=y(2);
-        dy(2)=-u/m*y(2)-k/m*y(1) + a*sin(phi*t);
+        dy(2)=-u/m*y(2)-k/m*y(1) + a*sin(omega*t);
     endfunction
     
     t0=0.0;y0=[1;0];
-    T=0.0:0.1:80;
+    T=0.0:0.1:30;
     y=ode(y0,t0,T,fun,list(fun));
     scf(3);
-    plot(T,y(1,:)), xgrid();
-    scf(4);
-    plot(y(1,:),y(2,:)); xgrid();
+    plot(T,y(1,:)); xgrid();
+    //scf(4);
+    //plot(y(1,:),y(2,:)); xgrid();
 endfunction
 
-function zad7red(u, k, m, a, phi)
+function zad7red(u, k, m, a, omega)
     function dy=fun(t, y)
         dy(1)=y(2);
-        dy(2)=-u/m*y(2)-k/m*y(1) + a*sin(phi*t);
+        dy(2)=-u/m*y(2)-k/m*y(1) + a*sin(omega*t);
     endfunction
     
     t0=0.0;y0=[1;0];
@@ -200,22 +200,99 @@ function zad7red(u, k, m, a, phi)
     y=ode(y0,t0,T,fun,list(fun));
     scf(3);
     plot(T,y(1,:), 'r'); xgrid();
-    scf(4);
-    plot(y(1,:),y(2,:), 'r'); xgrid();
+    //scf(4);
+    //plot(y(1,:),y(2,:), 'r'); xgrid();
 endfunction
 
-zad7(6, 4, 1, 2, 1)
-
-zad7(4, 2, 1, 2, 1) // k_1 i k_2 są różne, rzeczywiste
-
-zad7(1, 4, 1, 2, 1) // k_1 i k_2 są zespolone
-
-zad7(1, 0, 1, 2, 1) // k1 i k_2 są równe
-
-for phi=0.1:0.2:2
-    zad7(6, 4, 1, 2, phi)
+for a=1.9:0.05:2.1
+for omega=0.9:0.05:1.1
+zad7(6, 4, 1, a, omega) // Wartości zadane
 end
+end
+xs2png(3, "img/7-zadane-xy.png")
+close();
 
+for a=1.9:0.05:2.1
+for omega=0.9:0.05:1.1
+zad7(4, 2, 1, 2, omega) // k_1 i k_2 są różne, rzeczywiste
+end
+end
+xs2png(3, "img/7-rzeczywiste-xy.png")
+close();
+
+for a=1.9:0.05:2.1
+for omega=0.9:0.05:1.1
+zad7(1, 4, 1, 2, omega) // k_1 i k_2 są zespolone
+end
+end
+xs2png(3, "img/7-zespolone-xy.png")
+close();
+
+for a=1.9:0.05:2.1
+for omega=0.9:0.05:1.1
+zad7(0, 1, 1, 2, omega) // Bez oporu
+end
+end
+xs2png(3, "img/7-rowne-xy.png")
+close();
+
+//////////////////////////////////////////////////////////////////////////////
+
+function zad7f2(u, k, m, a, omega)
+    function dy=fun(t, y)
+        dy(1)=y(2);
+        dy(2)=-u/m*y(2)-k/m*y(1) + a*exp(sin(omega*t));
+    endfunction
+    
+    t0=0.0;y0=[1;0];
+    T=0.0:0.1:30;
+    y=ode(y0,t0,T,fun,list(fun));
+    scf(3);
+    plot(T,y(1,:), 'r'); xgrid();
+    //scf(4);
+    //plot(y(1,:),y(2,:)); xgrid();
+endfunction
+
+for a=1.9:0.05:2.1
+for omega=0.9:0.05:1.1
+zad7f2(6, 4, 1, a, omega) // Wartości zadane
+end
+end
+xs2png(3, "img/7-zadane-xy-f2.png")
+close();
+
+for a=1.9:0.05:2.1
+for omega=0.9:0.05:1.1
+zad7f2(4, 2, 1, 2, omega) // k_1 i k_2 są różne, rzeczywiste
+end
+end
+xs2png(3, "img/7-rzeczywiste-xy-f2.png")
+close();
+
+for a=1.9:0.05:2.1
+for omega=0.9:0.05:1.1
+zad7f2(1, 4, 1, 2, omega) // k_1 i k_2 są zespolone
+end
+end
+xs2png(3, "img/7-zespolone-xy-f2.png")
+close();
+
+for a=1.9:0.05:2.1
+for omega=0.9:0.05:1.1
+zad7f2(0, 1, 1, 2, omega) // Bez oporu
+end
+end
+xs2png(3, "img/7-boporu-xy-f2.png")
+close();
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+for omega=1:0.05:1.1
+    zad7(6, 4, 1, 2, omega)
+end
 zad7red(6, 4, 1, 2, 0.01)
 
 
@@ -225,26 +302,53 @@ u_1 = 6;
 u_2 = 1;
 k_1 = 4;
 k_2 = 1;
-function dy=fun(t, y)
-    // y(1) = x_1
-    // y(2) = v_1
-    // y(3) = x_2
-    // y(4) = v_2
-    dy(1)=y(2); // 
-    dy(2)=k_2/m_1*y(3)+u_2/m_1*y(4)-k_2/m_1*y(1)-u_2/m_1*y(2)-k_1/m_1*y(1)-u_1/m_1*y(2)
-    dy(3)=y(4)
-    dy(4)=-k_2/m_2*y(3)-u_2/m_2*y(4)+k_2/m_1*y(1)+u_2/m_2*y(2)
+a=2;
+omega=1;
+function zad8(u_1,u_2, k_1, k_2, m_1, m_2, a, omega, y00)
+    function dy=fun(t, y)
+        dy(1)=y(2); // 
+        dy(2)=k_2/m_1*y(3)+u_2/m_1*y(4)-k_2/m_1*y(1)-u_2/m_1*y(2)-k_1/m_1*y(1)-u_1/m_1*y(2)
+        dy(3)=y(4)
+        dy(4)=-k_2/m_2*y(3)-u_2/m_2*y(4)+k_2/m_1*y(1)+u_2/m_2*y(2)+1/m_2 * a*sin(omega*t)
+    endfunction
+    
+    t0=0.0;y0=y00;
+    T=0.0:0.5:40;
+    y=ode(y0,t0,T,fun,list(fun));
+    scf(3);
+    plot(T,y); xgrid();
+    scf(4);
+    plot(y(1,:),y(2,:)); xgrid();
+    scf(5);
+    plot(y(3,:),y(4,:)); xgrid();
 endfunction
 
-t0=0.0;y0=[1;0;0;0];
-T=0.0:0.5:100;
-y=ode(y0,t0,T,fun,list(fun));
-scf(3);
-plot(T,y); xgrid();
-scf(4);
-plot(y(1,:),y(3,:)); xgrid();
+
+zad8(u_1,u_2, k_1, k_2, m_1, 5, a, omega, [1;0;0;1]);
+zad8(u_1,u_2, k_1, k_2, m_1, 5.1, a, omega,[1;0;0;1]);
+zad8(u_1,u_2, k_1, k_2, m_1, 4.8, a, omega, [1;0;0;1]);
+xs2png(3, "img/8-zadane-xy.png")
+xs2png(4, "img/8-zadane-phase-12.png")
+xs2png(5, "img/8-zadane-phase-34.png")
+close();close();close();
 
 
+zad8(u_1,u_2, 4, k_2, m_1, m_2, a, omega, [0;1;1;0]);
+zad8(u_1,u_2, 4.4, k_2, m_1, m_2, a, omega, [0;1;1;0]);
+zad8(u_1,u_2, 3.6, k_2, m_1, m_2, a, omega, [0;1;1;0]);
+xs2png(3, "img/8-1-zadane-xy.png")
+xs2png(4, "img/8-1-zadane-phase-12.png")
+xs2png(5, "img/8-1-zadane-phase-34.png")
+close();close();close();
+
+
+zad8(6,u_2, k_1, k_2, m_1, m_2, a, omega, [1;1;0;0]);
+zad8(6.6,u_2, k_1, k_2, m_1, m_2, a, omega, [1;1;0;0]);
+zad8(5.4,u_2, k_1, k_2, m_1, m_2, a, omega, [1;1;0;0]);
+xs2png(3, "img/8-2-zadane-xy.png")
+xs2png(4, "img/8-2-zadane-phase-12.png")
+xs2png(5, "img/8-2-zadane-phase-34.png")
+close();close();close();
 
 
 
