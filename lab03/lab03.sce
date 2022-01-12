@@ -8,6 +8,14 @@ p_3 = 13;
 tau = tau_1;
 A =0.5;
 
+u1 = -1.1447;
+T = (-u1^2 + 1)/tau - 1
+delta = (-u1^2 + 1)/tau*(-1) - b / (-tau)
+T^2 - 4*delta
+
+lambda1 = 0.5 * (T - sqrt(T^2 - 4*delta))
+lambda2 = 0.5 * (T + sqrt(T^2 - 4*delta))
+
 for A = (A-0.1*abs(A)):0.05*abs(A):(A+0.1*abs(A))
     function du=syst2(t, u) //definicja układu RR
         du=zeros(2,1);
